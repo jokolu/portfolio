@@ -1,0 +1,28 @@
+{
+  "name": "portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+  },
+  "dependencies": {
+    "@sveltejs/adapter-cloudflare": "^4.9.0",
+    "@fontsource/playfair-display": "^5.1.1",
+    "@fontsource-variable/dm-sans": "^5.1.1",
+    "@fontsource-variable/jetbrains-mono": "^5.1.1",
+    "lucide-svelte": "^0.513.0"
+  },
+  "devDependencies": {
+    "@sveltejs/kit": "^2.68.0",
+    "@tailwindcss/vite": "^4.3.1",
+    "svelte": "^5.33.11",
+    "svelte-check": "^4.2.1",
+    "tailwindcss": "^4.3.1",
+    "typescript": "^5.8.3",
+    "vite": "^8.1.0"
+  }
+}
