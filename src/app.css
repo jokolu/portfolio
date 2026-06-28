@@ -1,13 +1,12 @@
 @import 'tailwindcss';
 
-/* ─── Fonts (self-hosted via fontsource — GDPR compliant) ─────────────── */
+/* ─── Fonts ───────────────────────────────────────────────────────────── */
 @import '@fontsource/playfair-display/400.css';
 @import '@fontsource/playfair-display/400-italic.css';
 @import '@fontsource/playfair-display/700.css';
 @import '@fontsource-variable/dm-sans';
 @import '@fontsource-variable/jetbrains-mono';
 
-/* ─── Tailwind theme extensions ───────────────────────────────────────── */
 @theme inline {
 	--font-sans: 'DM Sans Variable', 'DM Sans', system-ui, sans-serif;
 	--font-display: 'Playfair Display', Georgia, serif;
@@ -17,46 +16,46 @@
 /* ─── Design tokens ───────────────────────────────────────────────────── */
 :root {
 	--transition-theme: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+	--navbar-h: 64px;
 }
 
 :root[data-theme='dark'] {
-	--bg: #0c0c0c;
-	--surface: #131313;
-	--surface-2: #1a1a1a;
-	--border: #242424;
-	--border-hover: #333;
-	--text: #f0eeea;
-	--text-muted: #666;
-	--text-subtle: #3a3a3a;
-	--accent: #e8ff47;
-	--accent-bg: rgba(232, 255, 71, 0.06);
+	--bg:          #0c0c0c;
+	--surface:     #131313;
+	--surface-2:   #1a1a1a;
+	--border:      #242424;
+	--border-hover:#333;
+	--text:        #f0eeea;
+	--text-muted:  #666;
+	--text-subtle: #2e2e2e;
+	--accent:      #e8ff47;
+	--accent-bg:   rgba(232, 255, 71, 0.06);
 	--accent-text: #0c0c0c;
-	--glow: rgba(232, 255, 71, 0.03);
 }
 
 :root[data-theme='light'] {
-	--bg: #f5f4ef;
-	--surface: #ffffff;
-	--surface-2: #eeede8;
-	--border: #dddbd5;
-	--border-hover: #c8c6c0;
-	--text: #111111;
-	--text-muted: #888;
-	--text-subtle: #ccc;
-	--accent: #111111;
-	--accent-bg: rgba(17, 17, 17, 0.05);
-	--accent-text: #f5f4ef;
-	--glow: transparent;
+	--bg:          #f5f4ef;
+	--surface:     #ffffff;
+	--surface-2:   #eeede8;
+	--border:      #dddbd5;
+	--border-hover:#c8c6c0;
+	--text:        #111111;
+	--text-muted:  #777;
+	--text-subtle: #d0cec8;
+	--accent:      #0057ff;
+	--accent-bg:   rgba(0, 87, 255, 0.06);
+	--accent-text: #ffffff;
 }
 
 /* ─── Base reset ──────────────────────────────────────────────────────── */
 *,
 *::before,
-*::after {
-	box-sizing: border-box;
-}
+*::after { box-sizing: border-box; }
 
 html {
+	overflow-x: clip;           /* FIX: prevent horizontal overflow (Safari-safe) */
+	min-width: 375px;           /* FIX: no broken layout below mobile width       */
+	background-color: var(--bg);/* FIX: html bg = no dark strip in light mode     */
 	scroll-behavior: smooth;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
@@ -67,7 +66,7 @@ body {
 	color: var(--text);
 	font-family: var(--font-sans);
 	transition: var(--transition-theme);
-	overflow-x: hidden;
+	overflow-x: clip;
 	position: relative;
 }
 
@@ -77,8 +76,8 @@ body {
 	position: fixed;
 	inset: 0;
 	background: radial-gradient(
-		700px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-		rgba(232, 255, 71, 0.035),
+		700px circle at var(--mouse-x, -200px) var(--mouse-y, -200px),
+		rgba(232, 255, 71, 0.03),
 		transparent 40%
 	);
 	pointer-events: none;
@@ -90,40 +89,41 @@ body {
 	position: fixed;
 	top: 0;
 	left: 0;
+	width: 100vw;          /* FIX: was missing, bar was invisible */
 	height: 2px;
 	background: var(--accent);
 	z-index: 200;
+	transform: scaleX(0);
 	transform-origin: left;
-	transition: transform 0.1s linear;
+	transition: background-color 0.3s ease;
 }
 
-/* ─── Typography scale ────────────────────────────────────────────────── */
-.text-display {
-	font-family: var(--font-display);
-	font-style: italic;
-	line-height: 1;
-	letter-spacing: -0.02em;
+/* ─── Scroll offset for fixed navbar ─────────────────────────────────── */
+/* FIX: prevents sections scrolling behind the navbar */
+#projects, #about, #reviews, #contact, #stats {
+	scroll-margin-top: calc(var(--navbar-h) + 16px);
 }
 
+/* ─── Typography ──────────────────────────────────────────────────────── */
 .text-hero {
 	font-family: var(--font-sans);
-	font-size: clamp(3rem, 8vw, 7.5rem);
+	font-size: clamp(2.8rem, 7.5vw, 7rem);
 	font-weight: 600;
-	line-height: 1;
+	line-height: 1.0;
 	letter-spacing: -0.04em;
 }
 
 .text-hero-serif {
 	font-family: var(--font-display);
 	font-style: italic;
-	font-size: clamp(3.2rem, 8.5vw, 8rem);
+	font-size: clamp(3rem, 8vw, 7.5rem);
 	line-height: 0.95;
 	letter-spacing: -0.03em;
 	color: var(--accent);
 }
 
 .text-section-heading {
-	font-size: clamp(2rem, 4vw, 3.5rem);
+	font-size: clamp(1.8rem, 3.5vw, 3rem);
 	font-weight: 600;
 	letter-spacing: -0.03em;
 	line-height: 1.1;
@@ -131,82 +131,157 @@ body {
 
 .label {
 	font-family: var(--font-mono);
-	font-size: 0.72rem;
+	font-size: 0.7rem;
 	letter-spacing: 0.12em;
 	text-transform: uppercase;
 	color: var(--text-muted);
 }
 
-/* ─── Layout helpers ──────────────────────────────────────────────────── */
+/* ─── Section layout ──────────────────────────────────────────────────── */
 .container {
 	width: 100%;
 	max-width: 1200px;
 	margin: 0 auto;
 	padding: 0 1.5rem;
 }
-
 @media (min-width: 768px) {
-	.container {
-		padding: 0 2.5rem;
-	}
+	.container { padding: 0 2.5rem; }
 }
 
-section {
-	position: relative;
-	z-index: 1;
+section { position: relative; z-index: 1; }
+
+.section      { padding: 5rem 0; }
+.section-lg   { padding: 7rem 0; }
+@media (min-width: 768px) {
+	.section    { padding: 7rem 0; }
+	.section-lg { padding: 9rem 0; }
 }
 
-/* ─── Noise texture (hero only) ───────────────────────────────────────── */
+/* ─── Section heading block — used in ALL sections for consistency ────── */
+.section-head { margin-bottom: 4rem; }
+.section-head .label { display: block; margin-bottom: 0.75rem; }
+
+/* ─── Hero-specific ───────────────────────────────────────────────────── */
 .noise-bg::after {
 	content: '';
 	position: absolute;
 	inset: 0;
 	background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
 	background-size: 200px 200px;
-	opacity: 0.03;
+	opacity: 0.025;
 	pointer-events: none;
 	z-index: 0;
 }
 
-/* ─── Reveal animation ────────────────────────────────────────────────── */
+/* Dot grid visual — upper right of hero */
+.hero-dots {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 52%;
+	height: 78%;
+	background-image: radial-gradient(circle, var(--accent) 1.5px, transparent 1.5px);
+	background-size: 30px 30px;
+	mask-image: radial-gradient(ellipse 85% 80% at 82% 18%, black 15%, transparent 68%);
+	-webkit-mask-image: radial-gradient(ellipse 85% 80% at 82% 18%, black 15%, transparent 68%);
+	opacity: 0.14;
+	pointer-events: none;
+	z-index: 0;
+}
+
+/* Large faint arc — depth layer */
+.hero-arc {
+	position: absolute;
+	top: -18%;
+	right: -12%;
+	width: min(700px, 80vw);
+	height: min(700px, 80vw);
+	border-radius: 50%;
+	border: 1px solid var(--accent);
+	opacity: 0.04;
+	pointer-events: none;
+	z-index: 0;
+}
+.hero-arc-2 {
+	position: absolute;
+	top: -8%;
+	right: -6%;
+	width: min(500px, 60vw);
+	height: min(500px, 60vw);
+	border-radius: 50%;
+	border: 1px solid var(--accent);
+	opacity: 0.06;
+	pointer-events: none;
+	z-index: 0;
+}
+
+/* Bottom gradient fade */
+.hero-fade {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 220px;
+	background: linear-gradient(to bottom, transparent 0%, var(--bg) 100%);
+	pointer-events: none;
+	z-index: 2;
+}
+
+/* Hero entrance animations (CSS-based — no IO needed for in-viewport) */
+@keyframes heroFadeUp {
+	from { opacity: 0; transform: translateY(20px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+.hero-anim {
+	opacity: 0;
+	animation: heroFadeUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+	.hero-anim { opacity: 1; animation: none; }
+}
+
+/* Scroll indicator line */
+@keyframes scrollDrop {
+	0%   { transform: scaleY(0) translateY(-100%); opacity: 0; }
+	40%  { opacity: 1; }
+	100% { transform: scaleY(1) translateY(0); opacity: 0; }
+}
+.scroll-indicator-line {
+	width: 1px;
+	height: 52px;
+	background: linear-gradient(to bottom, var(--accent), transparent);
+	transform-origin: top;
+	animation: scrollDrop 2s ease-in-out infinite;
+}
+
+/* ─── Reveal animation (scroll-triggered, for non-hero sections) ──────── */
 .will-reveal {
 	opacity: 0;
-	transform: translateY(22px);
+	transform: translateY(20px);
 	transition:
-		opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms),
+		opacity  0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms),
 		transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms);
 }
-
-.will-reveal.revealed {
-	opacity: 1;
-	transform: translateY(0);
-}
+.will-reveal.revealed { opacity: 1; transform: translateY(0); }
 
 @media (prefers-reduced-motion: reduce) {
-	.will-reveal {
-		opacity: 1;
-		transform: none;
-		transition: none;
-	}
+	.will-reveal { opacity: 1; transform: none; transition: none; }
 }
 
 /* ─── Navbar ──────────────────────────────────────────────────────────── */
 .navbar {
 	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
+	top: 0; left: 0; right: 0;
 	z-index: 100;
-	height: 64px;
+	height: var(--navbar-h);
 	border-bottom: 1px solid transparent;
 	transition:
 		background-color 0.3s ease,
-		border-color 0.3s ease,
-		backdrop-filter 0.3s ease;
+		border-color     0.3s ease,
+		backdrop-filter  0.3s ease;
 }
-
 .navbar.scrolled {
-	background-color: color-mix(in srgb, var(--bg) 80%, transparent);
+	background-color: color-mix(in srgb, var(--bg) 82%, transparent);
 	backdrop-filter: blur(20px) saturate(180%);
 	-webkit-backdrop-filter: blur(20px) saturate(180%);
 	border-bottom-color: var(--border);
@@ -224,42 +299,18 @@ section {
 	font-weight: 500;
 	letter-spacing: -0.01em;
 	cursor: pointer;
-	transition:
-		transform 0.15s ease,
-		box-shadow 0.15s ease,
-		background-color 0.15s ease,
-		border-color 0.15s ease;
+	transition: transform 0.15s ease, filter 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
 	text-decoration: none;
 	border: 1px solid transparent;
 	white-space: nowrap;
 }
+.btn:active { transform: scale(0.97); }
 
-.btn:active {
-	transform: scale(0.98);
-}
+.btn-primary { background-color: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+.btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
 
-.btn-primary {
-	background-color: var(--accent);
-	color: var(--accent-text);
-	border-color: var(--accent);
-}
-
-.btn-primary:hover {
-	filter: brightness(1.08);
-	transform: translateY(-1px);
-}
-
-.btn-ghost {
-	background-color: transparent;
-	color: var(--text);
-	border-color: var(--border);
-}
-
-.btn-ghost:hover {
-	border-color: var(--border-hover);
-	background-color: var(--surface);
-	transform: translateY(-1px);
-}
+.btn-ghost { background-color: transparent; color: var(--text); border-color: var(--border); }
+.btn-ghost:hover { border-color: var(--border-hover); background-color: var(--surface); transform: translateY(-1px); }
 
 /* ─── Cards ───────────────────────────────────────────────────────────── */
 .card {
@@ -267,16 +318,12 @@ section {
 	border: 1px solid var(--border);
 	border-radius: 12px;
 	overflow: hidden;
-	transition:
-		transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-		border-color 0.25s ease,
-		box-shadow 0.25s ease;
+	transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
 }
-
 .card:hover {
 	transform: translateY(-4px);
 	border-color: var(--accent);
-	box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
 }
 
 /* ─── Badges ──────────────────────────────────────────────────────────── */
@@ -286,63 +333,27 @@ section {
 	padding: 0.2rem 0.6rem;
 	border-radius: 4px;
 	font-family: var(--font-mono);
-	font-size: 0.7rem;
-	font-weight: 400;
-	letter-spacing: 0.02em;
+	font-size: 0.68rem;
 	background-color: var(--surface-2);
 	color: var(--text-muted);
 	border: 1px solid var(--border);
 }
 
-/* ─── Divider ─────────────────────────────────────────────────────────── */
-.divider {
-	width: 1px;
-	height: 100%;
-	background-color: var(--border);
-}
-
-/* ─── Section spacing ─────────────────────────────────────────────────── */
-.section {
-	padding: 6rem 0;
-}
-
-@media (min-width: 768px) {
-	.section {
-		padding: 8rem 0;
-	}
-}
-
-/* ─── Marquee (tech scroll) ───────────────────────────────────────────── */
-@keyframes marquee {
-	from { transform: translateX(0); }
-	to   { transform: translateX(-50%); }
-}
-
+/* ─── Marquee ─────────────────────────────────────────────────────────── */
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 .marquee-track {
 	display: flex;
-	animation: marquee 30s linear infinite;
+	animation: marquee 32s linear infinite;
 	width: max-content;
 }
+.marquee-track:hover { animation-play-state: paused; }
 
-.marquee-track:hover {
-	animation-play-state: paused;
-}
+/* ─── Focus + selection ───────────────────────────────────────────────── */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+::selection    { background-color: var(--accent); color: var(--accent-text); }
 
-/* ─── Focus visible ───────────────────────────────────────────────────── */
-:focus-visible {
-	outline: 2px solid var(--accent);
-	outline-offset: 3px;
-	border-radius: 4px;
-}
-
-/* ─── Scrollbar ───────────────────────────────────────────────────────── */
-:root[data-theme='dark'] ::-webkit-scrollbar { width: 6px; }
+/* ─── Scrollbar (dark only) ───────────────────────────────────────────── */
+:root[data-theme='dark'] ::-webkit-scrollbar       { width: 5px; }
 :root[data-theme='dark'] ::-webkit-scrollbar-track { background: var(--bg); }
 :root[data-theme='dark'] ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 :root[data-theme='dark'] ::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
-
-/* ─── Selection ───────────────────────────────────────────────────────── */
-::selection {
-	background-color: var(--accent);
-	color: var(--accent-text);
-}

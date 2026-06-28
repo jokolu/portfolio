@@ -2,24 +2,46 @@
 <html lang="de" data-theme="dark">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" href="%sveltekit.assets%/favicon.svg" type="image/svg+xml" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="description" content="Jonah Willner — Webentwickler für moderne, performante Websites im DACH-Raum." />
-		<!-- Anti-flicker: resolve theme before first paint -->
+
+		<!-- SEO -->
+		<title>Jonah Willner — Webentwickler Berlin</title>
+		<meta name="description" content="Jonah Willner – Webentwickler aus Berlin. Moderne, blitzschnelle Websites für lokale Unternehmen im DACH-Raum." />
+		<link rel="canonical" href="https://jonahwillner.de" />
+
+		<!-- Open Graph -->
+		<meta property="og:type"        content="website" />
+		<meta property="og:title"       content="Jonah Willner — Webentwickler" />
+		<meta property="og:description" content="Moderne, blitzschnelle Websites für lokale Unternehmen. Messbar besser als die Konkurrenz." />
+		<meta property="og:url"         content="https://jonahwillner.de" />
+
+		<!-- Favicon -->
+		<link rel="icon" href="%sveltekit.assets%/favicon.svg" type="image/svg+xml" />
+
+		<!-- Theme color (updated dynamically via JS) -->
+		<meta id="theme-color-meta" name="theme-color" content="#0c0c0c" />
+
+		<!-- PERF: Preload body font (DM Sans variable) — prevents FOUT on LCP text -->
+		<link rel="preload" as="font" type="font/woff2" crossorigin="anonymous"
+			href="%sveltekit.assets%/../node_modules/@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2" />
+
+		<!-- Anti-flicker: resolve theme + locale before first paint — runs sync -->
 		<script>
 			(function () {
 				try {
 					var t = localStorage.getItem('jw-theme') || 'auto';
-					var resolved =
-						t === 'auto'
-							? window.matchMedia('(prefers-color-scheme: dark)').matches
-								? 'dark'
-								: 'light'
-							: t;
+					var resolved = t === 'auto'
+						? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+						: t;
 					document.documentElement.setAttribute('data-theme', resolved);
+					document.querySelector('#theme-color-meta')
+						.setAttribute('content', resolved === 'dark' ? '#0c0c0c' : '#f5f4ef');
+					var l = localStorage.getItem('jw-locale');
+					if (l === 'en') document.documentElement.lang = 'en';
 				} catch (e) {}
 			})();
 		</script>
+
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

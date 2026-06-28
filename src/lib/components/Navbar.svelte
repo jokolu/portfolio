@@ -3,92 +3,88 @@
 	import { theme, type Theme } from '$lib/stores/theme.svelte';
 	import { locale, t } from '$lib/i18n/index.svelte';
 
-	let scrolled = $state(false);
+	let scrolled   = $state(false);
 	let mobileOpen = $state(false);
-	let themeOpen = $state(false);
-	let themeBtn: HTMLButtonElement;
-	let themeMenu: HTMLDivElement;
+	let themeOpen  = $state(false);
+	let themeMenu: HTMLDivElement | undefined;
+	let themeBtn:  HTMLButtonElement | undefined;
 
-	const themeOptions: { value: Theme; label: { de: string; en: string }; icon: typeof Sun }[] = [
-		{ value: 'light', label: { de: 'Hell', en: 'Light' }, icon: Sun },
-		{ value: 'dark',  label: { de: 'Dunkel', en: 'Dark' }, icon: Moon },
-		{ value: 'auto',  label: { de: 'System', en: 'System' }, icon: Monitor }
+	const options: { value: Theme; de: string; en: string }[] = [
+		{ value: 'light', de: 'Hell',   en: 'Light'  },
+		{ value: 'dark',  de: 'Dunkel', en: 'Dark'   },
+		{ value: 'auto',  de: 'System', en: 'System' },
 	];
 
-	function themeIcon() {
-		const r = theme.resolved;
-		return r === 'dark' ? Moon : Sun;
-	}
-
 	$effect(() => {
-		function onScroll() { scrolled = window.scrollY > 40; }
+		const onScroll = () => { scrolled = window.scrollY > 40; };
 		window.addEventListener('scroll', onScroll, { passive: true });
 		return () => window.removeEventListener('scroll', onScroll);
 	});
 
 	$effect(() => {
-		function onClickOutside(e: MouseEvent) {
-			if (themeOpen && themeMenu && !themeMenu.contains(e.target as Node) && !themeBtn.contains(e.target as Node)) {
-				themeOpen = false;
-			}
-		}
-		document.addEventListener('mousedown', onClickOutside);
-		return () => document.removeEventListener('mousedown', onClickOutside);
+		const onOut = (e: MouseEvent) => {
+			if (themeOpen && themeMenu && themeBtn &&
+				!themeMenu.contains(e.target as Node) &&
+				!themeBtn.contains(e.target as Node)) themeOpen = false;
+		};
+		document.addEventListener('mousedown', onOut);
+		return () => document.removeEventListener('mousedown', onOut);
 	});
 
-	function scrollTo(id: string) {
+	function goTo(id: string) {
 		mobileOpen = false;
-		const el = document.getElementById(id);
-		if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 	}
 
-	const navLinks = [
+	const links = [
 		{ id: 'projects', key: 'projects' as const },
 		{ id: 'about',    key: 'about'    as const },
 		{ id: 'reviews',  key: 'reviews'  as const },
-		{ id: 'contact',  key: 'contact'  as const }
+		{ id: 'contact',  key: 'contact'  as const },
 	];
 </script>
 
-<nav class="navbar" class:scrolled>
-	<div class="container flex items-center justify-between h-full gap-6">
+<nav class="navbar" class:scrolled aria-label="Hauptnavigation">
+	<div class="container flex items-center justify-between h-full gap-4">
+
 		<!-- Logo -->
 		<button
 			onclick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-			class="flex flex-col items-start leading-none cursor-pointer border-none bg-transparent p-0"
+			class="flex flex-col items-start leading-none cursor-pointer border-none bg-transparent p-0 shrink-0"
 			aria-label="Zurück nach oben"
 		>
 			<span class="font-semibold text-sm tracking-tight" style="color: var(--text)">Jonah Willner</span>
-			<span class="label" style="font-size: 0.62rem; margin-top: 1px">Webentwickler</span>
+			<span class="label" style="font-size: 0.6rem; margin-top: 1px; letter-spacing: 0.1em">Webentwickler</span>
 		</button>
 
-		<!-- Desktop nav -->
-		<div class="hidden md:flex items-center gap-1">
-			{#each navLinks as link}
+		<!-- Desktop nav links -->
+		<div class="hidden md:flex items-center gap-0.5 flex-1 justify-center">
+			{#each links as link}
 				<button
-					onclick={() => scrollTo(link.id)}
-					class="px-3 py-1.5 rounded-md text-sm transition-colors cursor-pointer border-none bg-transparent"
+					onclick={() => goTo(link.id)}
+					class="px-3 py-1.5 rounded-md text-sm cursor-pointer border-none bg-transparent transition-colors"
 					style="color: var(--text-muted); font-family: var(--font-sans)"
-					onmouseenter={(e) => (e.currentTarget as HTMLButtonElement).style.color = 'var(--text)'}
-					onmouseleave={(e) => (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)'}
+					onmouseenter={(e) => (e.currentTarget as HTMLElement).style.color = 'var(--text)'}
+					onmouseleave={(e) => (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)'}
 				>
 					{t('nav')[link.key]}
 				</button>
 			{/each}
 		</div>
 
-		<!-- Controls -->
-		<div class="flex items-center gap-2">
+		<!-- Right controls -->
+		<div class="flex items-center gap-2 shrink-0">
+
 			<!-- Language toggle -->
 			<button
 				onclick={() => locale.toggle()}
-				class="flex items-center gap-1 px-2.5 py-1 rounded-md border text-xs font-mono cursor-pointer transition-colors"
-				style="border-color: var(--border); color: var(--text-muted); background: transparent; font-size: 0.72rem; letter-spacing: 0.08em"
 				aria-label="Sprache wechseln"
+				class="flex items-center gap-1 px-2.5 py-1 rounded-md border cursor-pointer transition-colors"
+				style="border-color: var(--border); background: transparent"
 			>
-				<span style="color: {locale.current === 'de' ? 'var(--text)' : 'var(--text-muted)'}">DE</span>
-				<span style="color: var(--border)">|</span>
-				<span style="color: {locale.current === 'en' ? 'var(--text)' : 'var(--text-muted)'}">EN</span>
+				<span class="font-mono text-xs transition-colors" style="color: {locale.current === 'de' ? 'var(--text)' : 'var(--text-muted)'}; letter-spacing: 0.08em">DE</span>
+				<span style="color: var(--border); font-size: 0.65rem">|</span>
+				<span class="font-mono text-xs transition-colors" style="color: {locale.current === 'en' ? 'var(--text)' : 'var(--text-muted)'}; letter-spacing: 0.08em">EN</span>
 			</button>
 
 			<!-- Theme dropdown -->
@@ -96,31 +92,47 @@
 				<button
 					bind:this={themeBtn}
 					onclick={() => themeOpen = !themeOpen}
-					class="flex items-center gap-1 px-2.5 py-1.5 rounded-md border cursor-pointer transition-colors"
-					style="border-color: var(--border); color: var(--text-muted); background: transparent"
 					aria-label="Theme wechseln"
 					aria-expanded={themeOpen}
+					class="flex items-center gap-1 px-2.5 py-1.5 rounded-md border cursor-pointer"
+					style="border-color: var(--border); color: var(--text-muted); background: transparent"
 				>
-					<svelte:component this={themeIcon()} size={14} />
-					<ChevronDown size={11} style="opacity:0.5; transition: transform 0.2s; transform: rotate({themeOpen ? '180deg' : '0deg'})" />
+					<!-- FIX: explicit conditional instead of svelte:component -->
+					{#if theme.resolved === 'dark'}
+						<Moon size={14} />
+					{:else}
+						<Sun size={14} />
+					{/if}
+					<ChevronDown
+						size={11}
+						style="opacity:0.5; transition: transform 0.2s; transform: rotate({themeOpen ? 180 : 0}deg)"
+					/>
 				</button>
 
 				{#if themeOpen}
 					<div
 						bind:this={themeMenu}
 						class="absolute right-0 mt-2 rounded-lg border overflow-hidden py-1"
-						style="background: var(--surface); border-color: var(--border); min-width: 130px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); z-index: 200"
+						style="background: var(--surface); border-color: var(--border); min-width: 128px; box-shadow: 0 8px 32px rgba(0,0,0,0.25); z-index: 200"
 					>
-						{#each themeOptions as opt}
+						{#each options as opt}
+							{@const active = theme.current === opt.value}
 							<button
 								onclick={() => { theme.set(opt.value); themeOpen = false; }}
-								class="flex items-center gap-2.5 w-full px-3 py-2 text-left text-sm cursor-pointer transition-colors border-none"
-								style="background: {theme.current === opt.value ? 'var(--accent-bg)' : 'transparent'}; color: {theme.current === opt.value ? 'var(--accent)' : 'var(--text-muted)'}; font-family: var(--font-sans)"
-								onmouseenter={(e) => { if (theme.current !== opt.value) (e.currentTarget as HTMLButtonElement).style.background = 'var(--surface-2)'; }}
-								onmouseleave={(e) => { if (theme.current !== opt.value) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+								class="flex items-center gap-2.5 w-full px-3 py-2 text-left text-sm cursor-pointer border-none transition-colors"
+								style="background: {active ? 'var(--accent-bg)' : 'transparent'}; color: {active ? 'var(--accent)' : 'var(--text-muted)'}; font-family: var(--font-sans)"
+								onmouseenter={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--surface-2)'; }}
+								onmouseleave={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
 							>
-								<svelte:component this={opt.icon} size={13} />
-								{locale.current === 'de' ? opt.label.de : opt.label.en}
+								<!-- FIX: explicit conditionals for each icon -->
+								{#if opt.value === 'light'}
+									<Sun size={13} />
+								{:else if opt.value === 'dark'}
+									<Moon size={13} />
+								{:else}
+									<Monitor size={13} />
+								{/if}
+								{locale.current === 'de' ? opt.de : opt.en}
 							</button>
 						{/each}
 					</div>
@@ -129,10 +141,10 @@
 
 			<!-- Mobile hamburger -->
 			<button
-				class="md:hidden flex items-center justify-center w-9 h-9 rounded-md border cursor-pointer transition-colors"
+				class="md:hidden flex items-center justify-center w-9 h-9 rounded-md border cursor-pointer"
 				style="border-color: var(--border); color: var(--text-muted); background: transparent"
 				onclick={() => mobileOpen = !mobileOpen}
-				aria-label="Menü"
+				aria-label={mobileOpen ? 'Menü schließen' : 'Menü öffnen'}
 				aria-expanded={mobileOpen}
 			>
 				{#if mobileOpen}<X size={16} />{:else}<Menu size={16} />{/if}
@@ -141,28 +153,30 @@
 	</div>
 </nav>
 
-<!-- Mobile overlay -->
+<!-- Mobile overlay — FIX: z-index 110 > navbar 100 -->
 {#if mobileOpen}
 	<div
-		class="fixed inset-0 z-50 flex flex-col pt-20 pb-8 px-6"
-		style="background: var(--bg)"
+		class="fixed inset-0 flex flex-col"
+		style="z-index: 110; background: var(--bg); padding-top: calc(var(--navbar-h) + 1.5rem)"
 	>
-		<nav class="flex flex-col gap-2 flex-1">
-			{#each navLinks as link}
-				<button
-					onclick={() => scrollTo(link.id)}
-					class="text-left py-4 border-b text-2xl font-semibold tracking-tight cursor-pointer bg-transparent border-x-0 border-t-0"
-					style="border-color: var(--border); color: var(--text); font-family: var(--font-sans)"
-				>
-					{t('nav')[link.key]}
-				</button>
-			{/each}
-		</nav>
-		<button
-			onclick={() => { mobileOpen = false; scrollTo('contact'); }}
-			class="btn btn-primary w-full justify-center mt-6"
-		>
-			{t('hero').cta_secondary}
-		</button>
+		<div class="container flex flex-col flex-1">
+			<nav class="flex flex-col gap-1">
+				{#each links as link}
+					<button
+						onclick={() => goTo(link.id)}
+						class="text-left py-5 border-b text-2xl font-semibold tracking-tight cursor-pointer bg-transparent border-x-0 border-t-0"
+						style="border-color: var(--border); color: var(--text); font-family: var(--font-sans)"
+					>
+						{t('nav')[link.key]}
+					</button>
+				{/each}
+			</nav>
+			<button
+				onclick={() => goTo('contact')}
+				class="btn btn-primary w-full justify-center mt-auto mb-8"
+			>
+				{t('hero').cta_secondary} <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+			</button>
+		</div>
 	</div>
 {/if}

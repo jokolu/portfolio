@@ -3,78 +3,49 @@
 	import { t } from '$lib/i18n/index.svelte';
 	import { reveal } from '$lib/actions/index';
 
-	// Duplicate skills for seamless marquee loop
-	const marqueeItems = [...skills, ...skills];
+	const marqueeItems = [...skills, ...skills, ...skills];
 </script>
 
 <section id="about" class="section" style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border)">
 	<div class="container">
-		<div class="grid md:grid-cols-2 gap-16 items-center">
+		<div class="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
+
 			<!-- Text -->
 			<div>
-				<div use:reveal>
-					<span class="label block mb-3">02 — {t('about').heading}</span>
-					<h2 class="text-section-heading mb-8" style="color: var(--text)">{t('about').heading}</h2>
+				<div use:reveal class="section-head">
+					<span class="label">02 — {t('about').heading}</span>
+					<h2 class="text-section-heading mt-3" style="color: var(--text)">{t('about').heading}</h2>
 				</div>
 
-				<div use:reveal={{ delay: 100 }}>
-					<p class="mb-4 leading-relaxed" style="color: var(--text-muted); font-size: 1.05rem">
-						{t('about').p1}
-					</p>
-					<p class="leading-relaxed" style="color: var(--text-muted); font-size: 1.05rem">
-						{t('about').p2}
-					</p>
+				<div use:reveal={{ delay: 100 }} class="flex flex-col gap-4">
+					<p class="leading-relaxed" style="color: var(--text-muted); font-size: 1.025rem">{t('about').p1}</p>
+					<p class="leading-relaxed" style="color: var(--text-muted); font-size: 1.025rem">{t('about').p2}</p>
 				</div>
 
-				<!-- Availability dot -->
-				<div use:reveal={{ delay: 200 }} class="flex items-center gap-2 mt-8">
-					<span class="inline-block w-2 h-2 rounded-full animate-pulse" style="background: #4ade80"></span>
-					<span class="label" style="color: #4ade80">Verfügbar für neue Projekte</span>
+				<!-- FIX: i18n for availability text -->
+				<div use:reveal={{ delay: 180 }} class="flex items-center gap-2 mt-8">
+					<span class="w-2 h-2 rounded-full animate-pulse shrink-0" style="background: #4ade80"></span>
+					<span class="label" style="color: #4ade80; letter-spacing: 0.08em">{t('about').availability}</span>
 				</div>
 			</div>
 
-			<!-- Visual: big JW monogram + stats -->
-			<div use:reveal={{ delay: 150 }} class="relative flex items-center justify-center" style="min-height: 320px">
-				<!-- Faded monogram -->
+			<!-- Skills grid + JW monogram -->
+			<div use:reveal={{ delay: 120 }} class="relative flex items-center justify-center" style="min-height: 280px">
 				<div
 					class="absolute select-none pointer-events-none"
-					style="
-						font-family: var(--font-display);
-						font-style: italic;
-						font-size: clamp(8rem, 15vw, 14rem);
-						font-weight: 700;
-						color: var(--accent);
-						opacity: 0.06;
-						line-height: 1;
-						letter-spacing: -0.05em;
-						user-select: none
-					"
+					style="font-family: var(--font-display); font-style: italic; font-size: clamp(7rem, 14vw, 12rem); font-weight: 700; color: var(--accent); opacity: 0.055; line-height: 1; letter-spacing: -0.05em"
 					aria-hidden="true"
 				>JW</div>
 
-				<!-- Skills grid over monogram -->
-				<div class="relative grid grid-cols-2 gap-3 w-full" style="z-index: 1; max-width: 320px">
+				<div class="relative grid grid-cols-2 gap-2.5 w-full" style="z-index: 1; max-width: 300px">
 					{#each skills.slice(0, 8) as skill, i}
 						<div
-							class="px-3 py-2.5 rounded-lg border flex items-center gap-2 text-sm"
-							style="
-								background: var(--surface-2);
-								border-color: var(--border);
-								color: var(--text-muted);
-								font-family: var(--font-mono);
-								font-size: 0.75rem;
-								transition: border-color 0.2s, color 0.2s
-							"
-							onmouseenter={(e) => {
-								(e.currentTarget as HTMLElement).style.borderColor = 'var(--accent)';
-								(e.currentTarget as HTMLElement).style.color = 'var(--text)';
-							}}
-							onmouseleave={(e) => {
-								(e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
-								(e.currentTarget as HTMLElement).style.color = 'var(--text-muted)';
-							}}
+							class="px-3 py-2.5 rounded-lg border flex items-center gap-2 transition-all cursor-default"
+							style="background: var(--surface-2); border-color: var(--border); color: var(--text-muted); font-family: var(--font-mono); font-size: 0.72rem"
+							onmouseenter={(e) => { const el = e.currentTarget as HTMLElement; el.style.borderColor = 'var(--accent)'; el.style.color = 'var(--text)'; }}
+							onmouseleave={(e) => { const el = e.currentTarget as HTMLElement; el.style.borderColor = 'var(--border)'; el.style.color = 'var(--text-muted)'; }}
 						>
-							<span style="color: var(--accent); opacity: 0.6; font-size: 0.6rem">{String(i + 1).padStart(2, '0')}</span>
+							<span style="color: var(--accent); opacity: 0.5; font-size: 0.58rem; flex-shrink: 0">{String(i + 1).padStart(2, '0')}</span>
 							{skill}
 						</div>
 					{/each}
@@ -83,16 +54,12 @@
 		</div>
 	</div>
 
-	<!-- Skills marquee -->
-	<div class="mt-20 overflow-hidden" style="border-top: 1px solid var(--border); padding-top: 2rem">
-		<div class="marquee-track">
+	<!-- FIX: marquee outside container padding, but inside section — correct spacing -->
+	<div class="overflow-hidden mt-16" style="border-top: 1px solid var(--border); padding-top: 2rem; padding-bottom: 0">
+		<div class="marquee-track" aria-hidden="true">
 			{#each marqueeItems as skill}
-				<span
-					class="mx-6 text-sm whitespace-nowrap"
-					style="font-family: var(--font-mono); color: var(--text-subtle); letter-spacing: 0.05em"
-				>
-					{skill}
-					<span style="color: var(--accent); margin-left: 1.5rem; opacity: 0.5">·</span>
+				<span class="mx-5 whitespace-nowrap" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-subtle); letter-spacing: 0.06em; text-transform: uppercase">
+					{skill}<span style="color: var(--accent); margin-left: 1.25rem; opacity: 0.4"> ·</span>
 				</span>
 			{/each}
 		</div>
